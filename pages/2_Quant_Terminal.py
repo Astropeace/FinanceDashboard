@@ -673,13 +673,16 @@ with col_ai_r:
                 mom_str = momentum.to_string(index=False)
                 beta_str = beta_df.to_string(index=False) if not beta_df.empty else 'N/A'
 
+                vix_str = f"{vix_now:.1f}" if vix_now is not None else "N/A"
+                spy_str = f"{spy_1d:+.2f}" if spy_1d is not None else "N/A"
+
                 if mode == "Morning Alpha Brief":
                     prompt = f"""You are a senior quant analyst at Jane Street. Today is {last_sync.strftime('%A %B %d, %Y')}.
 
 Produce a rigorous morning alpha brief. Use statistical language. No disclaimers.
 
 SECTIONS:
-1. REGIME CONTEXT: VIX={vix_now:.1f if vix_now else 'N/A'}, SPY 1D={spy_1d:+.2f if spy_1d else 'N/A'}%. Characterize the risk environment in one sentence.
+1. REGIME CONTEXT: VIX={vix_str}, SPY 1D={spy_str}%. Characterize the risk environment in one sentence.
 
 2. TOP Z-SCORE SIGNALS: From the z-score data below, identify the 2 most statistically significant signals (|z| > 1.5). State the ticker, z-score, and a one-sentence hypothesis for the driver.
 
