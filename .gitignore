@@ -1,0 +1,11 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# NEVER commit secrets
+.streamlit/secrets.toml
+
+# OS
+.DS_Store

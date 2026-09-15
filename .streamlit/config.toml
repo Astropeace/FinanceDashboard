@@ -1,0 +1,4 @@
+[general]
+# Streamlit Community Cloud deployment config
+# Required so the app doesn't ask for email on startup
+email = ""
