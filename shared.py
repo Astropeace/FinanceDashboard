@@ -103,7 +103,7 @@ def render_nav(current: str) -> None:
 
     pages = {
         "🌍 Climate Dashboard": "app.py",
-        "📐 Quant Terminal":    "pages/2_📐_Quant_Terminal.py",
+        "📐 Quant Terminal":    "pages/2_Quant_Terminal.py",
     }
 
     # Sidebar navigation
