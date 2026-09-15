@@ -218,7 +218,7 @@ def compute_pair_divergence(prices: pd.DataFrame, fund: pd.DataFrame) -> pd.Data
     has deviated > 1.5 std from its mean — a potential mean-reversion signal.
     """
     results = []
-    for sector, tickers in UNIVERSE.items():
+    for sector, tickers in WATCHLIST.items():
         valid = [t for t in tickers if t in prices.columns]
         for i in range(len(valid)):
             for j in range(i + 1, len(valid)):
@@ -301,6 +301,11 @@ last_sync = datetime.now(timezone.utc)
 # SIDEBAR
 # ─────────────────────────────────────────────
 with st.sidebar:
+    st.markdown("## 🛰️ Pages")
+    if st.button("🌍 Climate Dashboard", use_container_width=True):
+        st.switch_page("app.py")
+    st.button("📐 Quant Terminal", use_container_width=True, disabled=True)
+    st.divider()
     st.title("📐 QT Controls")
     st.caption(f"Sync: {last_sync.strftime('%b %d · %H:%M UTC')}")
     if st.button("⟳ Refresh Engine", use_container_width=True, type="primary"):

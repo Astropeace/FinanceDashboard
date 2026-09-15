@@ -178,6 +178,11 @@ last_refresh = datetime.now(timezone.utc)
 # SIDEBAR CONTROLS
 # ─────────────────────────────────────────────
 with st.sidebar:
+    st.markdown("## 🛰️ Pages")
+    st.button("🌍 Climate Dashboard", use_container_width=True, disabled=True)
+    if st.button("📐 Quant Terminal", use_container_width=True):
+        st.switch_page("pages/2_Quant_Terminal.py")
+    st.divider()
     st.caption(f"Synced: {last_refresh.strftime('%b %d · %H:%M UTC')}")
     if st.button("🔄 Force Refresh", use_container_width=True, type="primary"):
         st.cache_data.clear(); st.rerun()
