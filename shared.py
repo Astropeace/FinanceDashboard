@@ -98,17 +98,5 @@ SECTOR_ORDER = list(WATCHLIST.keys())
 # NAV HELPER  (call once at top of each page)
 # ─────────────────────────────────────────────
 def render_nav(current: str) -> None:
-    """Renders a top navigation bar and sidebar links between pages."""
-    import streamlit as st
-
-    pages = {
-        "🌍 Climate Dashboard": "app.py",
-        "📐 Quant Terminal":    "pages/2_Quant_Terminal.py",
-    }
-
-    # Sidebar navigation
-    with st.sidebar:
-        st.markdown("### 🛰️ Navigation")
-        for label, path in pages.items():
-            st.page_link(path, label=label)
-        st.divider()
+    """No-op: Streamlit auto-generates sidebar nav from the pages/ directory."""
+    pass
