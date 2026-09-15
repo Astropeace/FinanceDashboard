@@ -1,12 +1,6 @@
 """
 Jane Street-style Quantitative Analysis Terminal
 ─────────────────────────────────────────────────
-Focus: Statistical edge detection, signal generation, and rigorous
-cross-asset / climate-driven relative-value analysis.
-
-Disciplines: Z-score screening · Correlation regimes · Momentum factor
-ranking · Pair divergence · Climate impact scoring · Beta-adjusted
-risk metrics · AI synthesis with structured quant framing.
 """
 
 import streamlit as st
@@ -22,25 +16,11 @@ from scipy import stats
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 
-# ─────────────────────────────────────────────
-# PAGE CONFIG  (must be first Streamlit call)
-# ─────────────────────────────────────────────
-st.set_page_config(
-    page_title="QT — Quant Terminal",
-    page_icon="📐",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
-from auth   import require_login
 from shared import (
     LLM_BASE_URL, WATCHLIST, ALL_TICKERS, TICKER_TO_SECTOR,
     BENCH_TICKER, VIX_TICKER, CLIMATE_IMPACT_MATRIX, SECTOR_ORDER,
-    render_nav,
 )
 
-require_login()
-render_nav("quant")
 
 st.markdown("""
 <style>
@@ -301,11 +281,6 @@ last_sync = datetime.now(timezone.utc)
 # SIDEBAR
 # ─────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("## 🛰️ Pages")
-    if st.button("🌍 Climate Dashboard", use_container_width=True):
-        st.switch_page("app.py")
-    st.button("📐 Quant Terminal", use_container_width=True, disabled=True)
-    st.divider()
     st.title("📐 QT Controls")
     st.caption(f"Sync: {last_sync.strftime('%b %d · %H:%M UTC')}")
     if st.button("⟳ Refresh Engine", use_container_width=True, type="primary"):
