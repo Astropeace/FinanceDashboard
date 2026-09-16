@@ -294,6 +294,13 @@ with st.sidebar:
 
     st.divider()
     st.subheader("🧠 AI Engine")
+    llm_endpoint = st.text_input(
+        "LLM Endpoint",
+        value=st.session_state.get("llm_endpoint", LLM_BASE_URL),
+        help="Paste your Cloudflare tunnel URL here. Saved for this session.",
+        placeholder="https://xxxx.trycloudflare.com",
+    )
+    st.session_state["llm_endpoint"] = llm_endpoint
     model_id    = st.text_input("Model ID", value="qwen2.5-coder-14b-instruct-mlx")
     temperature = st.slider("Temperature", 0.0, 1.0, 0.1, 0.05,
                             help="Lower = more analytical/deterministic output")
@@ -739,7 +746,7 @@ Then rank the top 3 actionable sector positions implied by current physical risk
 """
 
                 resp = requests.post(
-                    f"{LLM_BASE_URL}/v1/chat/completions",
+                    f"{llm_endpoint}/v1/chat/completions",
                     headers={"Content-Type": "application/json"},
                     data=json.dumps({"model": model_id,
                                      "messages": [{"role": "user", "content": prompt}],
