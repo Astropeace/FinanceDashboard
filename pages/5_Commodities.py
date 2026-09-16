@@ -548,12 +548,29 @@ with tab_seas:
 
             col_s1, col_s2 = st.columns([2, 1])
             with col_s1:
+                current_month = now.month
+                current_month_name = MONTHS[current_month - 1]
+
+                # Highlight current month bar (add_vline crashes on categorical x-axis)
+                bar_colors = [
+                    '#00ccff' if mn == current_month_name
+                    else ('#00cc88' if v >= 0 else '#ff4444')
+                    for v, mn in zip(seas_df['AvgReturn'], seas_df['MonthName'])
+                ]
+                bar_line_colors = ['#ffffff' if mn == current_month_name else 'rgba(0,0,0,0)'
+                                   for mn in seas_df['MonthName']]
+                bar_line_widths = [2 if mn == current_month_name else 0
+                                   for mn in seas_df['MonthName']]
+
                 fig_s = go.Figure()
                 fig_s.add_trace(go.Bar(
                     x=seas_df['MonthName'], y=seas_df['AvgReturn'],
                     name='Avg Return',
-                    marker_color=['#00cc88' if v >= 0 else '#ff4444' for v in seas_df['AvgReturn']],
-                    text=[f"{v:+.2f}%" for v in seas_df['AvgReturn']], textposition='outside',
+                    marker_color=bar_colors,
+                    marker_line=dict(color=bar_line_colors, width=bar_line_widths),
+                    text=[f"{v:+.2f}%{'  ◄ NOW' if mn == current_month_name else ''}"
+                          for v, mn in zip(seas_df['AvgReturn'], seas_df['MonthName'])],
+                    textposition='outside',
                     opacity=0.9,
                 ))
                 fig_s.add_trace(go.Scatter(
@@ -563,13 +580,6 @@ with tab_seas:
                     marker=dict(size=6),
                 ))
                 fig_s.add_hline(y=0, line_color='white', opacity=0.3)
-                current_month = now.month
-                current_month_name = MONTHS[current_month-1]
-                fig_s.add_vline(
-                    x=current_month_name, line_dash='dash',
-                    line_color='#00ccff', opacity=0.8,
-                    annotation_text="← Now", annotation_position="top",
-                )
                 fig_s.update_layout(
                     template='plotly_dark',
                     title=f'{seas_sym_name} — Average Monthly Returns (5Y)',
