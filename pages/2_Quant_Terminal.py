@@ -58,11 +58,35 @@ GDACS_URL   = "https://gdacs.org/xml/rss.xml"
 # ─────────────────────────────────────────────
 @st.cache_data(ttl=300, show_spinner=False)
 def load_price_matrix() -> pd.DataFrame:
-    """Returns a wide DataFrame of daily adjusted close prices for all tickers + bench + VIX."""
+    """Robust price loader that handles yfinance MultiIndex output."""
     all_syms = ALL_TICKERS + [BENCH_TICKER, VIX_TICKER]
-    raw = yf.download(all_syms, period=LOOKBACK, auto_adjust=True, progress=False)
-    closes = raw['Close'] if 'Close' in raw else raw
-    return closes.dropna(how='all')
+    try:
+        raw = yf.download(all_syms, period=LOOKBACK, auto_adjust=True,
+                          progress=False, group_by='ticker')
+        # yfinance ≥0.2 with group_by='ticker' gives MultiIndex (Ticker, OHLCV)
+        if isinstance(raw.columns, pd.MultiIndex):
+            # Try ('Ticker', 'Close') layout first
+            try:
+                closes = raw.xs('Close', axis=1, level=1)
+            except KeyError:
+                # Try ('Close', 'Ticker') layout
+                closes = raw['Close']
+        else:
+            closes = raw['Close'] if 'Close' in raw.columns else raw
+        closes = closes.dropna(how='all')
+        # Ensure all requested symbols are present
+        missing = [s for s in all_syms if s not in closes.columns]
+        if missing:
+            for sym in missing:
+                try:
+                    h = yf.Ticker(sym).history(period=LOOKBACK, auto_adjust=True)
+                    if not h.empty:
+                        closes[sym] = h['Close']
+                except Exception:
+                    pass
+        return closes
+    except Exception:
+        return pd.DataFrame()
 
 
 @st.cache_data(ttl=300, show_spinner=False)
@@ -402,6 +426,8 @@ with col_z:
             margin=dict(l=10, r=100, t=45, b=10), height=420,
         )
         st.plotly_chart(fig_z, use_container_width=True)
+    else:
+        st.info("⏳ Price data loading — z-scores compute after first data fetch completes.")
 
 with col_cl:
     st.subheader("🌡️ Climate Impact Score by Sector")
@@ -458,6 +484,8 @@ with col_corr:
             yaxis=dict(autorange='reversed'),
         )
         st.plotly_chart(fig_corr, use_container_width=True)
+    else:
+        st.info("⏳ Correlation matrix builds after price history loads.")
 
 with col_pairs:
     st.subheader("⚖️ Intra-Sector Pair Divergence")
